@@ -37,7 +37,7 @@ function createMessage() {
  * downloads all messages from the database and displays them ordered by date
  */
 async function displayAllMessages() {
-  const q = query(collection(db, 'messages'), orderBy('date', 'desc'));
+  const q = query(collection(db, 'messages'), orderBy('date', 'asc'));
   const messages = await getDocs(q);
   document.querySelector('#messages').innerHTML = '';
   messages.forEach((doc) => {
@@ -74,7 +74,7 @@ function displayMessage(message) {
 function handleSubmit() {
   const message = createMessage();
   sendMessage(message);
-  displayMessage(message);
+  //displayMessage(message);
 }
 
 document.querySelector('#send').addEventListener('click', handleSubmit);
