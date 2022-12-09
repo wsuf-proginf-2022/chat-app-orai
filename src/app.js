@@ -11,6 +11,7 @@ import {
   getDocs,
   onSnapshot
 } from 'firebase/firestore';
+import scrollIntoView from 'scroll-into-view-if-needed';
 
 const app = initializeApp(config);
 
@@ -64,6 +65,10 @@ function displayMessage(message) {
     </div>
   `;
   document.querySelector('#messages').insertAdjacentHTML('beforeend', messageHTML);
+  scrollIntoView(document.querySelector('#messages'), {
+    scrollMode: 'if-needed',
+    block: 'end'
+  });
 }
 
 function handleSubmit() {
@@ -86,7 +91,7 @@ window.addEventListener('DOMContentLoaded', () => {
   displayAllMessages();
 });
 
-onSnapshot(collection(db, 'messsages'), (snapshot) => {
+onSnapshot(collection(db, 'messages'), (snapshot) => {
   snapshot.docChanges().forEach((change) => {
     if (change.type === 'added') {
       displayMessage(change.doc.data());
