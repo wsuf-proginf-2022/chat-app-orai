@@ -8,7 +8,8 @@ import {
   Timestamp,
   query,
   orderBy,
-  getDocs
+  getDocs,
+  onSnapshot
 } from 'firebase/firestore';
 
 const app = initializeApp(config);
@@ -65,12 +66,36 @@ function displayMessage(message) {
   document.querySelector('#messages').insertAdjacentHTML('beforeend', messageHTML);
 }
 
-document.querySelector('#send').addEventListener('click', () => {
+function handleSubmit() {
   const message = createMessage();
-  if (message.message && message.username) sendMessage(message);
+  sendMessage(message);
+  displayMessage(message);
+}
+
+document.querySelector('#send').addEventListener('click', handleSubmit);
+
+// send the message if the enter key is pressed
+document.addEventListener('keyup', (event) => {
+  if (event.key === 'Enter') {
+    handleSubmit();
+  }
 });
 
 window.addEventListener('DOMContentLoaded', () => {
   // the document is fully loaded
   displayAllMessages();
+});
+
+onSnapshot(collection(db, 'messsages'), (snapshot) => {
+  snapshot.docChanges().forEach((change) => {
+    if (change.type === 'added') {
+      displayMessage(change.doc.data());
+    }
+    if (change.type === 'modified') {
+      console.log('Modified');
+    }
+    if (change.type === 'removed') {
+      console.log('Removed');
+    }
+  });
 });
