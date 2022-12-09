@@ -1,7 +1,15 @@
 import './scss/style.scss';
 import config from './db_config.js';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, addDoc, Timestamp } from 'firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  Timestamp,
+  query,
+  orderBy,
+  getDocs
+} from 'firebase/firestore';
 
 const app = initializeApp(config);
 
@@ -21,6 +29,18 @@ function createMessage() {
   const username = document.querySelector('#nickname').value;
   const date = Timestamp.now();
   return { message, username, date };
+}
+
+/**
+ * downloads all messages from the database and displays them ordered by date
+ */
+async function displayAllMessages() {
+  const q = query(collection(db, 'messages'), orderBy('date', 'desc'));
+  const messages = await getDocs(q);
+  document.querySelector('#messages').innerHTML = '';
+  messages.forEach((doc) => {
+    displayMessage(doc.data());
+  });
 }
 
 function displayMessage(message) {
@@ -48,4 +68,9 @@ function displayMessage(message) {
 document.querySelector('#send').addEventListener('click', () => {
   const message = createMessage();
   if (message.message && message.username) sendMessage(message);
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  // the document is fully loaded
+  displayAllMessages();
 });
