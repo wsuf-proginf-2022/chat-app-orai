@@ -91,10 +91,18 @@ window.addEventListener('DOMContentLoaded', () => {
   displayAllMessages();
 });
 
-onSnapshot(collection(db, 'messages'), (snapshot) => {
+// document.querySelector('#messages').innerHTML = '';
+
+let initialLoad = true;
+
+const q = query(collection(db, 'messages'), orderBy('date', 'asc'));
+onSnapshot(q, (snapshot) => {
   snapshot.docChanges().forEach((change) => {
     if (change.type === 'added') {
-      displayMessage(change.doc.data());
+      console.log('added');
+      if (!initialLoad) {
+        displayMessage(change.doc.data());
+      }
     }
     if (change.type === 'modified') {
       console.log('Modified');
@@ -103,4 +111,5 @@ onSnapshot(collection(db, 'messages'), (snapshot) => {
       console.log('Removed');
     }
   });
+  initialLoad = false;
 });
